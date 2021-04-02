@@ -2,7 +2,7 @@
 """
 Created on Tue Mar 23 21:29:25 2021
 
-Author: Patrick Gartland
+Author: Giddy Physicist
 
 
 """
@@ -11,10 +11,6 @@ Author: Patrick Gartland
 from web3 import Web3 
 import json
 
-
-# eth_usd_addr = '0x9326BFA02ADD2366b30bacB125260Af641031331'
-
-# main_eth_usd_addr = '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419'
 
 g_currencyPairs = ['WETH-USDC',
  'LINK-USDC',
@@ -62,19 +58,6 @@ def getEndpoint(chain='mainnet'):
     except:
         raise ValueError(f'COULD NOT FIND ENDPOINT FOR SPECIFIED CHAIN: {chain.upper()}')
     return endpoint
-
-
-def getPriceData(chain="kovan", addr=''):
-    endpoint = getEndpoint(chain)
-    web3 = Web3(Web3.HTTPProvider(endpoint))
-    abi = '[{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint80","name":"_roundId","type":"uint80"}],"name":"getRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"version","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]'
-
-   
-    contract = web3.eth.contract(address=addr, abi=abi)
-    data = contract.functions.latestRoundData().call()
-    
-    print(data[1]/1E8)
-    return data[1]/1E8
 
 
 def getDodoPriceData(currencyPair, chain='mainnet'):
@@ -153,15 +136,16 @@ def getChainlinkPriceData(currencyPair, chain='mainnet'):
     'YFI-USD': '0xA027702dbb89fbd58938e4324ac03B58d812b0E1',
     'USDT-USD': '0x3E7d1eAB13ad0104d2750B8863b489D65364e32D'
     }
-    
-    if currencyPair.upper()[:-1] not in chainlinkAddresses:
-        raise ValueError(f'INVALID INPUT CURRENCY PAIR {currencyPair.upper()}')
     key = currencyPair.upper()[:-1]
+    if key not in chainlinkAddresses:
+        raise ValueError(f'INVALID INPUT CURRENCY PAIR {currencyPair.upper()}')
     address = chainlinkAddresses[key]
     contract = web3.eth.contract(address=address, abi=abi)
-    price = contract.functions.latestRoundData().call()[1] * usdTOusdc
-    return price
-    
+    roundData = contract.functions.latestRoundData().call()
+    price = roundData[1] * usdTOusdc
+    timestamp = roundData[3]
+    return price, timestamp
+
 
 def getDODOandChainlinkPriceData(currencyPair, chain='mainnet'):
     if currencyPair.upper()=='USDT-USDC':
@@ -173,17 +157,35 @@ def getDODOandChainlinkPriceData(currencyPair, chain='mainnet'):
     chainlinkDecimals = 1E8
     dodoPriceDictRaw = getDodoPriceData(currencyPair,chain=chain) 
     dodoPriceDict = {k:v/dodoDecimals for k,v in dodoPriceDictRaw.items()}
-    chainlinkPrice = getChainlinkPriceData(currencyPair,chain=chain) / chainlinkDecimals
-    print(f'DODO PRICE: {dodoPriceDict["midprice"]}')
-    print(f'CHAINLINK PRICE: {chainlinkPrice}')
+    chainlinkPriceData = getChainlinkPriceData(currencyPair,chain=chain)
+    chainlinkPrice = chainlinkPriceData[0] / chainlinkDecimals
+    chainlinkTimestamp = chainlinkPriceData[1]
+    # print(f'{currencyPair} DODO PRICE: {dodoPriceDict["midprice"]}')
+    # print(f'{currencyPair} CHAINLINK PRICE: {chainlinkPrice}')
     dodoPrice = dodoPriceDict['midprice']
     priceDelta = chainlinkPrice - dodoPrice
-    print(f'DODO PRICE ADVANTAGE: {priceDelta}')
+    # print(f'{currencyPair} DODO PRICE ADVANTAGE: {priceDelta}')
     priceAdvantagePercentage = priceDelta / chainlinkPrice *100
-    print(f'DODO PRICE PERCENTAGE EDGE: {priceAdvantagePercentage} %')
+    # print(f'{currencyPair} DODO PRICE PERCENTAGE EDGE: {priceAdvantagePercentage} %')
 
     return {'dodoPrice':dodoPrice,
-            'chainlinkPrice':chainlinkPrice}
+            'chainlinkPrice':chainlinkPrice,
+            'chainlinkTimestamp':chainlinkTimestamp}
+
+
+def queryAllPricesDodoAndChainlink(chain='mainnet'):
+    currencyPairs = ['WETH-USDC',
+                     'LINK-USDC',
+                     'AAVE-USDC',
+                     'SNX-USDC',
+                     'COMP-USDC',
+                     'WBTC-USDC',
+                     'YFI-USDC',
+                     'USDT-USDC']
+    results = {}
+    for currencyPair in currencyPairs:
+        results[currencyPair] = getDODOandChainlinkPriceData(currencyPair,chain=chain)
+    return results
 
 
 ###############################################################################
@@ -335,3 +337,143 @@ def getDODOandChainlinkPriceData(currencyPair, chain='mainnet'):
 #                         'ZRX-USD': '0x2885d15b8Af22648b98B122b22FDF4D2a56c6023',
 #                         'sCEX-USD': '0x283D433435cFCAbf00263beEF6A362b7cc5ed9f2',
 #                         'sDEFI-USD': '0xa8E875F94138B0C5b51d1e1d5dE35bbDdd28EA87'}
+
+
+
+# def getBinancePriceData(currencyPair, chain='mainnet'):
+#     raise NotImplementedError('HAD ISSUES WITH CALLING CONTRACT ADDRESSES BELOW.')
+#     decimals = 8
+#     if chain.upper() != 'MAINNET':
+#         raise ValueError('CURRENT FUNCTION ONLY WORKS ON MAINNET CHAIN.')
+#     abi = '[{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint80","name":"_roundId","type":"uint80"}],"name":"getRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"version","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]'
+#     endpoint = getEndpoint(chain)
+#     web3 = Web3(Web3.HTTPProvider(endpoint))  
+#     #first, calculate the USDC to USD rate:
+#     usdcTOusd = web3.eth.contract(address='0x51597f405303C4377E36123cBc172b13269EA163',abi=abi).functions.latestRoundData().call()[1] / (10**decimals)
+#     #then, convert to USD to USDC by inverting:
+#     usdTOusdc = 1/usdcTOusd
+#     binanceAddresses = {
+#         'WETH-USD':'0x9ef1B8c0E4F7dc8bF5719Ea496883DC6401d5b2e',
+#         'LINK-USD':'0xca236E327F629f9Fc2c30A4E95775EbF0B89fac8',
+#         'BTC-USD':'0x264990fbd0A4796A3E3d8E37C4d5F87a3aCa5Ebf',
+#         'YFI-USD':'0xD7eAa5Bf3013A96e3d515c055Dbd98DbdC8c620D',
+#         'USDT-USD':'0xB97Ad0E74fa7d920791E90258A6E2085088b4320'
+#         }
+#     key = currencyPair.upper()[:-1]
+#     if key not in binanceAddresses:
+#         raise ValueError(f'INVALID INPUT CURRENCY PAIR {currencyPair.upper()}')
+#     address = binanceAddresses[key]
+#     contract = web3.eth.contract(address=address, abi=abi)
+#     price = contract.functions.latestRoundData().call()[1] * usdTOusdc
+#     return price
+    
+    
+# def getHuobiEcoPriceData(currencyPair, chain='mainnet'):
+#     raise NotImplementedError('HAD ISSUES WITH CALLING CONTRACT ADDRESSES BELOW.')
+#     decimals = 8
+#     if chain.upper() != 'MAINNET':
+#         raise ValueError('CURRENT FUNCTION ONLY WORKS ON MAINNET CHAIN.')
+#     abi = '[{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint80","name":"_roundId","type":"uint80"}],"name":"getRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"version","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]'
+#     endpoint = getEndpoint(chain)
+#     web3 = Web3(Web3.HTTPProvider(endpoint))  
+#     #first, calculate the USDC to USD rate:
+#     raise Exception('NO CONVERSION FROM USDC-USD')
+#     usdcTOusd = 1.0000000
+#     #web3.eth.contract(address='', abi=abi).functions.latestRoundData().call()[1] / 1E8
+#     #then, convert to USD to USDC by inverting:
+#     usdTOusdc = 1/usdcTOusd
+    
+#     huobiEcoAddresses = {
+#         'WETH-USD':'0x5Fa530068e0F5046479c588775c157930EF0Dff0',
+#         'AAVE-USD':'0x8a054991B803F6a6958Ba9695Cc8D366C8a30a69',
+#         'SNX-USD':'0x1797a410485FeD6B05d5b39A475ddB9C33898ee8',
+#         'WBTC-USD':'0xD5c40f5144848Bd4EF08a9605d860e727b991513',
+#         'USDT-USD':'0xF0D3585D8dC9f1D1D1a7dd02b48C2630d9DD78eD',
+#         }
+#     key = currencyPair.upper()[:-1]
+#     if key not in huobiEcoAddresses:
+#         raise ValueError(f'INVALID INPUT CURRENCY PAIR {currencyPair.upper()}')
+#     address = huobiEcoAddresses[key]
+#     contract = web3.eth.contract(address=address, abi=abi)
+#     price = contract.functions.latestRoundData().call()[1] * usdTOusdc
+#     return price    
+
+
+
+# def getPolygonMaticPriceData(currencyPair, chain='mainnet'):
+#     raise NotImplementedError('HAD ISSUES WITH CALLING CONTRACT ADDRESSES BELOW.')
+#     if chain.upper() != 'MAINNET':
+#         raise ValueError('CURRENT FUNCTION ONLY WORKS ON MAINNET CHAIN.')
+#     abi = '[{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint80","name":"_roundId","type":"uint80"}],"name":"getRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"version","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]'
+#     endpoint = getEndpoint(chain)
+#     web3 = Web3(Web3.HTTPProvider(endpoint))  
+#     #first, calculate the USDC to USD rate:
+#     usdcTOusd = web3.eth.contract(address='0xfE4A8cc5b5B2366C1B58Bea3858e81843581b2F7', abi=abi).functions.latestRoundData().call()[1] / 1E8
+#     #then, convert to USD to USDC by inverting:
+#     usdTOusdc = 1/usdcTOusd
+    
+#     decimalsForPair = {'WETH-USD':8,
+#                        'LINK-ETH':18,
+#                        'AAVE-ETH':18,
+#                        'WBTC-ETH':18,
+#                        'USDT-USD':8
+#                        }
+#     #NEED TO JUMP TO ETH FIRST.
+#     polygonMaticAddresses = {
+#         'WETH-USD':'0xF9680D99D6C9589e2a93a78A04A279e509205945',
+#         'LINK-ETH':'0xb77fa460604b9C6435A235D057F7D319AC83cb53',
+#         'AAVE-ETH':'0xbE23a3AA13038CfC28aFd0ECe4FdE379fE7fBfc4',
+#         'WBTC-ETH':'0xA338e0492B2F944E9F8C0653D3AD1484f2657a37',
+#         'USDT-USD':'0x0A6513e40db6EB1b165753AD52E80663aeA50545'
+#         }
+#     key = currencyPair.upper()[:-1]
+#     if key not in polygonMaticAddresses:
+#         raise ValueError(f'INVALID INPUT CURRENCY PAIR {currencyPair.upper()}')
+#     address = polygonMaticAddresses[key]
+#     contract = web3.eth.contract(address=address, abi=abi)
+#     price = contract.functions.latestRoundData().call()[1] * usdTOusdc
+#     return price
+
+    
+    
+# def getXdaiPriceData(currencyPair, chain='mainnet'):
+#     raise NotImplementedError('HAD ISSUES WITH CALLING CONTRACT ADDRESSES BELOW.')
+#     decimals = 8
+#     if chain.upper() != 'MAINNET':
+#         raise ValueError('CURRENT FUNCTION ONLY WORKS ON MAINNET CHAIN.')
+#     abi = '[{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint80","name":"_roundId","type":"uint80"}],"name":"getRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"version","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]'
+#     endpoint = getEndpoint(chain)
+#     web3 = Web3(Web3.HTTPProvider(endpoint))  
+#     #first, calculate the USDC to USD rate:
+#     #raise Exception('NO CONVERSION FROM USDC-USD')
+#     usdcTOusd = 1.0000000
+#     #web3.eth.contract(address='', abi=abi).functions.latestRoundData().call()[1] / 1E8
+#     #then, convert to USD to USDC by inverting:
+#     usdTOusdc = 1/usdcTOusd
+
+#     xDaiAddresses = {
+#         'WETH-USD':'0xa767f745331D267c7751297D982b050c93985627',
+#         'LINK-USD':'0xed322A5ac55BAE091190dFf9066760b86751947B',
+#         'AAVE-USD':'0x2b481Dc923Aa050E009113Dca8dcb0daB4B68cDF',
+#         'SNX-USD':'0x3b84d6e6976D5826500572600eB44f9f1753827b',
+#         'WBTC-USD':'0x6C1d7e76EF7304a40e8456ce883BC56d3dEA3F7d',
+#         'YFI-USD':'0x14030d5a0C9e63D9606C6f2c8771Fc95b34b07e0'}
+#     key = currencyPair.upper()[:-1]
+#     if key not in xDaiAddresses:
+#         raise ValueError(f'INVALID INPUT CURRENCY PAIR {currencyPair.upper()}')
+#     address = xDaiAddresses[key]
+#     contract = web3.eth.contract(address=address, abi=abi)
+#     price = contract.functions.latestRoundData().call()[1] * usdTOusdc
+#     return price
+    
+#    def getPriceData(chain="kovan", addr=''):
+#     endpoint = getEndpoint(chain)
+#     web3 = Web3(Web3.HTTPProvider(endpoint))
+#     abi = '[{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint80","name":"_roundId","type":"uint80"}],"name":"getRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"version","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]'
+
+   
+#     contract = web3.eth.contract(address=addr, abi=abi)
+#     data = contract.functions.latestRoundData().call()
+    
+#     print(data[1]/1E8)
+#     return data[1]/1E8
