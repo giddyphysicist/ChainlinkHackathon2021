@@ -20,7 +20,7 @@ import dataStoreInterface as DSI
 s = sched.scheduler(time.time, time.sleep)
 
 
-def executePetaBotTasks(scheduler=s, timePeriod=60*15, pricePercentageTweetThreshold=0.1):
+def executePetaBotTasks(scheduler=s, timePeriod=30*15, pricePercentageTweetThreshold=0.1):
     location='file'
     dataRowDict = DSI.queryDataPoint()
     for pricePair,priceData in dataRowDict.items():
@@ -30,14 +30,18 @@ def executePetaBotTasks(scheduler=s, timePeriod=60*15, pricePercentageTweetThres
         #push data to ipfs database
         #check if DODO has price advantage
         #if so, compose tweet.
-        if priceData['dodoPriceEdgePercentage'] > pricePercentageTweetThreshold:
-            try:
-                TB.postPriceEdge(pricePair, 
-                                 priceData['dodoPriceEdgePercentage'], 
-                                 priceData['chainlinkPrice'], 
-                                 priceData['dodoPrice'])
-            except:
-                print('ERROR IN TRYING TO TWEET')
+        
+        
+        # if priceData['dodoPriceEdgePercentage'] > pricePercentageTweetThreshold:
+        #     try:
+        #         TB.postPriceEdge(pricePair, 
+        #                          priceData['dodoPriceEdgePercentage'], 
+        #                          priceData['chainlinkPrice'], 
+        #                          priceData['dodoPrice'])
+        #     except:
+        #         print('ERROR IN TRYING TO TWEET')
+                
+                
     scheduler.enter(timePeriod,1,executePetaBotTasks,kwargs={"scheduler":scheduler,
                                                              "timePeriod":timePeriod,
                                                              "pricePercentageTweetThreshold":pricePercentageTweetThreshold})
