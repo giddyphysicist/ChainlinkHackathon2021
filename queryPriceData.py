@@ -187,7 +187,9 @@ def queryAllPricesDodoAndChainlink(chain='mainnet'):
         results[currencyPair] = getDODOandChainlinkPriceData(currencyPair,chain=chain)
     return results
 
-
+###############################################################################
+# NOTE: Below, I attempted to use some of the other exchange data price feeds from
+#chainlink, but was unable to get them working in time for the hackaton.
 ###############################################################################
 # allChainlinkAddressesMainnet = {'1INCH-ETH': '0x72AFAECF99C9d9C8215fF44C77B94B99C28741e8',
 #                         'AAVE-ETH': '0x6Df09E975c830ECae5bd4eD9d90f3A95a4f88012',

@@ -164,14 +164,17 @@ st.set_page_config(page_title='PETA-Bot Dashboard',
 st.beta_container()
 st.title('PETA-BOT Analysis Dashboard')
 st.text('Price Edge & Twitter Analysis Bot')
-# cols = st.beta_columns(8)
+st.markdown('Check us out on [Github](https://github.com/giddyphysicist/ChainlinkHackathon2021)!')
+st.markdown('Follow our Alert Bot on [Twitter](https://twitter.com/DodoPetaBot)!')
+
+st.markdown('---')
+
 aboutExpander = st.beta_expander("About Us")
 with aboutExpander:
     st.markdown('The Price Edge & Twitter Analysis Bot (PETA-Bot) was developed during the 2021 Chainlink Hackathon.')
-    st.markdown('The PETA-Bot Project consists of two main components: a twitter bot and an analysis dashboard. Both components use the smart contract price feeds supplied by DODO and Chainlink for mainlink price comparisons between the exhanges. When the DODO exchange has a better midprice than the price quoted in chainlink, the twitter bot announces the percentage advantage in a tweet.')
+    st.markdown('The PETA-Bot Project consists of two main components: a twitter bot and an analysis dashboard. Both components use the smart contract price feeds supplied by DODO and Chainlink for mainnet price comparisons between the exhanges. When the DODO exchange has a better midprice than the price quoted in chainlink, the twitter bot announces the percentage advantage in a tweet.')
     st.image('./img/PETA-Bot_chart.png')
-st.markdown('Check us out on [Github](https://github.com/giddyphysicist/ChainlinkHackathon2021)!')
-st.markdown('Follow our Alert Bot on [Twitter](https://twitter.com/DodoPetaBot)!')
+
 st.markdown('---')
 st.text(f"Data Updated {updateTime}")
 ecol1,ecol2 = st.beta_columns(2)
@@ -217,18 +220,12 @@ for currencyPair,df in cp2df.items():
         st.markdown(' ')
         st.markdown(' ')
         st.markdown('---')
-   
+footerCol1,footerCol2 = st.beta_columns(2)
+with footerCol1:
+    st.markdown('Check us out on [Github](https://github.com/giddyphysicist/ChainlinkHackathon2021)!')
+with footerCol2:
+    st.markdown('Follow our Alert Bot on [Twitter](https://twitter.com/DodoPetaBot)!')
     # st.text(f'25th perc.: {pe25:.3f} %')
     # st.text(f'75th perc.: {pe75:.3f} %')
    
-    
-    def testFold():
-        alt.Chart(df).mark_line().transform_fold(
-    fold=['temp_max', 'temp_min'], 
-    as_=['variable', 'value']
-).encode(
-    x='yearmonth(date):T',
-    y='max(value):Q',
-    color='variable:N'
-)
-   
+
