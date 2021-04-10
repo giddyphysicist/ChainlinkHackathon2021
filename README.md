@@ -1,8 +1,14 @@
 # ChainlinkHackathon2021
 #chainlink
+
 PETA-Bot
 
 Price Edge & Twitter Analysis Bot (PETA-Bot)
+
+<p align="center">
+  <img src="./img/PETA-Bot-logo.png"/>
+</p>
+
 
 This project was started for the chainlink 2021 hackathon as my first foray into ethereum, smart contracts, and chainlink.
 
