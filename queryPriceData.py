@@ -4,6 +4,12 @@ Created on Tue Mar 23 21:29:25 2021
 
 Author: Giddy Physicist
 
+Query Price Data Module
+
+Part of the PETA-Bot hackathon repo. This module is used to interact with web3
+using an infura account to extract data from smart contract price feeds hosted
+by chainlink for the mainnet prices and from the DODO exchange mainnet prices.
+
 
 """
 
@@ -35,10 +41,15 @@ def getEndpoint(chain='mainnet'):
         goerli
         ropsten
 
+    Assumes that at a folder level above this python file, there is a json file
+    containing the credentials fo an infura account, called secrectInfuraCredentials.json
+    
+    
+
     Parameters
     ----------
     chain : str, optional
-        DESCRIPTION. The default is 'mainnet'.
+        DESCRIPTION. The default is 'mainnet' and currently only works for mainnet.
 
     Raises
     ------
@@ -115,6 +126,30 @@ def getDodoPriceData(currencyPair, chain='mainnet'):
 
 
 def getChainlinkPriceData(currencyPair, chain='mainnet'):
+    """
+    Uses python web3 and infura credentials to query chainlink mainnet pricefeed
+    data for specified currency pair input.
+
+    Parameters
+    ----------
+    currencyPair : TYPE
+        DESCRIPTION.
+    chain : TYPE, optional
+        DESCRIPTION. The default is 'mainnet'.
+
+    Raises
+    ------
+    ValueError
+        DESCRIPTION.
+
+    Returns
+    -------
+    price : float
+        price in USD.
+    timestamp : float
+        UTC timestamp in seconds.
+
+    """
     if chain.upper() != 'MAINNET':
         raise ValueError('CURRENT FUNCTION ONLY WORKS ON MAINNET CHAIN.')
     abi = '[{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint80","name":"_roundId","type":"uint80"}],"name":"getRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"latestRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"version","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]'
@@ -148,6 +183,27 @@ def getChainlinkPriceData(currencyPair, chain='mainnet'):
 
 
 def getDODOandChainlinkPriceData(currencyPair, chain='mainnet'):
+    """
+    Utility function for extracting the price feed data from smart contracts 
+    for the DODO exchange and from the Chainlink price feeds. Returns chainlink
+    price and dodo price for the input currency pair, along with the time stamp
+    tied to the chainlink data. Note, there was not a time stamp attribute for 
+    the equivalent DODO price query function.
+
+    Parameters
+    ----------
+    currencyPair : str
+        particular pair of cryptocurrencies from which to get price quote.
+    chain : str, optional
+        which chain to query price from. The default is 'mainnet'.
+
+    Returns
+    -------
+    dict
+        Dictionary containing the dodo price, the chainlink price, and the 
+        chainlink timestamp corresponding to the input currency pair.
+
+    """
     if currencyPair.upper()=='USDT-USDC':
         dodoDecimals = 1E18
     elif currencyPair.upper()=='WBTC-USDC':
@@ -163,9 +219,9 @@ def getDODOandChainlinkPriceData(currencyPair, chain='mainnet'):
     # print(f'{currencyPair} DODO PRICE: {dodoPriceDict["midprice"]}')
     # print(f'{currencyPair} CHAINLINK PRICE: {chainlinkPrice}')
     dodoPrice = dodoPriceDict['midprice']
-    priceDelta = chainlinkPrice - dodoPrice
+    # priceDelta = chainlinkPrice - dodoPrice
     # print(f'{currencyPair} DODO PRICE ADVANTAGE: {priceDelta}')
-    priceAdvantagePercentage = priceDelta / chainlinkPrice *100
+    # priceAdvantagePercentage = priceDelta / chainlinkPrice *100
     # print(f'{currencyPair} DODO PRICE PERCENTAGE EDGE: {priceAdvantagePercentage} %')
 
     return {'dodoPrice':dodoPrice,
@@ -173,15 +229,48 @@ def getDODOandChainlinkPriceData(currencyPair, chain='mainnet'):
             'chainlinkTimestamp':chainlinkTimestamp}
 
 
-def queryAllPricesDodoAndChainlink(chain='mainnet'):
-    currencyPairs = ['WETH-USDC',
-                     'LINK-USDC',
-                     'AAVE-USDC',
-                     'SNX-USDC',
+def getCurrencyPairs():
+    """
+    Returns a list of strings containing all the currency pairs used in this 
+    project.
+
+    Returns
+    -------
+    currencyPairs : list<str>
+        List of currency pair names
+
+    """
+    currencyPairs = ['AAVE-USDC',
                      'COMP-USDC',
+                     'LINK-USDC',
+                     'SNX-USDC',
+                     'USDT-USDC',
                      'WBTC-USDC',
-                     'YFI-USDC',
-                     'USDT-USDC']
+                     'WETH-USDC',
+                     'YFI-USDC']
+    return currencyPairs
+
+
+def queryAllPricesDodoAndChainlink(chain='mainnet'):
+    """
+    Primary function to be called from queryPriceDataModule. Extracts the DODO
+    and Chainlink mainnet price feed data for the intersecting set of currency
+    pairs. 
+
+    Parameters
+    ----------
+    chain : TYPE, optional
+        DESCRIPTION. The default is 'mainnet'.
+
+    Returns
+    -------
+    results : dict
+        Dictionary with currency pair string as key and the corresponding dictionary
+        containing chainlink and dodo price data in dollars, along with the 
+        chainlink time stamp.
+
+    """
+    currencyPairs = getCurrencyPairs()
     results = {}
     for currencyPair in currencyPairs:
         results[currencyPair] = getDODOandChainlinkPriceData(currencyPair,chain=chain)

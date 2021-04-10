@@ -4,17 +4,27 @@ Created on Sun Mar 28 22:57:25 2021
 
 Author: Giddy Physicist
 
+Data Store Interface Module
+
+Part of the PETA-Bot hackathon repo. This module is used to interact with the 
+historical price data files. The interaction involves loading a database, 
+querying for a new data row, appending the row to the database structure, and 
+pushing the new database structure back into the file storage locaiton. 
+
+There are two main locations for the database files:
+    (1) local csv files
+    (2) decentralized file server using IPFS
+
 
 """
-
-
+import os
+import subprocess
 import pandas as pd
-
 import time
-
 import queryPriceData as QPD
 
-
+# def getCurrencyPairs():
+#     return QPD.getCurrencyPairs()
 
 
 def queryDataPoint():
@@ -38,18 +48,98 @@ def queryDataPoint():
 
 
 def loadDatabase(currencyPair, location='file'):
+    """
+    extract historical price data for the specified currency pair name.
+    Loads the data into a pandas dataframe object
+
+    Parameters
+    ----------
+    currencyPair : str
+        currency pair name string.
+    location : TYPE, optional
+        DESCRIPTION. The default is 'file'.
+
+    Raises
+    ------
+    NotImplementedError
+        DESCRIPTION.
+    Exception
+        DESCRIPTION.
+
+    Returns
+    -------
+    df : pandas.core.frame.DataFrame
+        Pandas dataframe object containing .
+
+    """
     if location.lower()=='file':
-        df = pd.read_csv(f'./data/{currencyPair}.csv')
+        if not os.path.isdir('./data'):
+            os.makedirs('./data')
+        file = f'./data/{currencyPair}.csv'
+        if not os.path.isfile(file):
+            #pull from ipfs
+            ipnsDir = r'https://gateway.ipfs.io/ipns/k51qzi5uqu5djuxohf4c5kj838m14tgygn1hrey2cmda0y2efzwu03w63em3qt/'
+            ipnsFile = ipnsDir + f'{currencyPair}.csv'
+            df = pd.read_csv(ipnsFile)
+            df.to_csv(file,index=False)
+        else:
+            df = pd.read_csv(file)
     elif location.lower() =='ipfs':
-        raise NotImplementedError()
-        df = pd.read_csv('<IPFS ADDRESS HERE>')
+        # raise NotImplementedError()
+        try:
+            ipnsDir = r'https://gateway.ipfs.io/ipns/k51qzi5uqu5djuxohf4c5kj838m14tgygn1hrey2cmda0y2efzwu03w63em3qt/'
+            ipnsFile = ipnsDir + f'{currencyPair}.csv'
+        except:
+            print(f'WARNING -- COULD NOT EXTRACT {currencyPair} file from IFPS. Reverting to local file.')
+            ipnsFile = f'./data/{currencyPair}.csv'
+        df = pd.read_csv(ipnsFile)
     else:
         raise Exception('UNRECOGNIZED INPUT. LOCATION INPUT MUST SET TO "FILE" or "IPFS"')
     return df
     #implement IPFS database using IPNS name service or DNS mapping
-    
 
+
+def loadAllDatabases(location='file'):
+    """
+    Load Pandas dataframes for all currency pairs
+
+    Parameters
+    ----------
+    location : TYPE, optional
+        DESCRIPTION. The default is 'file'.
+
+    Returns
+    -------
+    dfs : list<pandas.core.frame.DataFrame>
+        List of pandas dataframes containing historical price data for each
+        currency pair.
+
+    """
+    currencyPairs = QPD.getCurrencyPairs()
+    dfs = []
+    for currencyPair in currencyPairs:
+        dfs.append(loadDatabase(currencyPair, location=location))
+    return dfs
+
+    
 def appendDataRowToDatabase(dataRow, database):
+    """
+    Append a data row to the input pandas dataframe object, and return a new 
+    dataframe object
+
+    Parameters
+    ----------
+    dataRow : TYPE
+        DESCRIPTION.
+    database : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    df : TYPE
+        DESCRIPTION.
+
+    """
     df = database.append(dataRow,ignore_index=True)
     return df
 
@@ -67,4 +157,10 @@ def pushDatabase(database,location='file',currencyPair=None):
         pass
     else:
         raise Exception('UNRECOGNIZED INPUT. LOCATION INPUT MUST SET TO "FILE" or "IPFS"')
+    
+    
+# def pushAllDataToIpfs(dataDir='data'):
+#     commands = ['ipfs','add','-r',dataDir]
+#     pipe = subprocess.Popen(commands,stdout=subprocess.PIPE)
+#     msg = pipe.
     
