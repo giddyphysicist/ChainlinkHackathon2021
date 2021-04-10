@@ -234,13 +234,20 @@ def buildAnalysisDashboardApp():
     # dfs,updateTime = extractData()
     dfs = DSI.loadAllDatabases()
     updateTime = datetime.datetime.now()
-    
     st.set_page_config(page_title='PETA-Bot Dashboard',
                               page_icon=None,
                               layout='centered',
                               initial_sidebar_state='auto')
     
     st.beta_container()
+    icol1, icol2, icol3 = st.beta_columns(3)    
+    with icol1:
+        pass
+    with icol2:
+        st.image('./img/PETA-Bot-logo.png')
+    with icol3:
+        pass
+
     st.title('PETA-BOT Analysis Dashboard')
     st.text('Price Edge & Twitter Analysis Bot')
     st.markdown('Check us out on [Github](https://github.com/giddyphysicist/ChainlinkHackathon2021)!')
