@@ -31,7 +31,76 @@ The main driving module is the PetaBotDriver.py. This module schedules price que
 
 ## How to run 
 
-Clone this repo. 
+Make sure you have a recent version of python installed on your machine.
+
+Create a new directory on your local computer and cd into it. 
+>mkdir petabot-project
+>cd petabot-project
+
+Create a folder called 'repo' inside the main petabot-project directory:
+>mkdir repo
+
+Clone this github repo into your local "repo" folder.
+
+Go up one directory level into the main petabot-project folder:
+>cd ..
+
+Add two .json files that will store your own credential information for your twitter account and for your infura account, and call them secretTwitterCredentials.json and secretInfuraCredentials.json, respectively:
+
+The secretTwitterCredentials.json file should contain the following:
+
+{"APP_KEY":"\<YOUR TWITTER APP KEY HERE\>",
+ "APP_SECRET":"\<YOUR TWITTER SECRET APP KEY HERE\>",
+ "OAUTH_TOKEN":"\<YOUR TWITTER OAUTH TOKEN HERE\>"
+ "OAUTH_TOKEN_SECRET":"\<YOUR TWITTER SECRET OATH TOKEN  HERE\>"
+ "BEARER_TOKEN":"\<YOUR TWITTER BEARER TOKEN HERE\>"}
+
+The secretInfuraCredentials.json file should contain the following:
+
+{"PROJECT_ID":"\<YOUR INFURA PROJECT ID HERE\>",
+ "PROJECT_SECRET":"\<YOUR SECRET INFURA PROJECT ID HERE\>",
+ "KOVAN_ENDPOINT":"https://kovan.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>",
+ "MAINNET_ENDPOINT":"https://mainnet.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>",
+ "ROPSTEN_ENDPOINT":"https://ropsten.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>",
+ "RINKEBY_ENDPOINT":"https://rinkeby.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>",
+ "GOERLI_ENDPOINT":"https://goerli.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>"}
+  
+ So now, your directory structure should look like:
+ 
+
+    petabot-project 
+    
+    |--secretTwitterCredentials.json
+    
+    |--secretInfuraCredentials.json
+    
+    |--repo
+    
+         |.git
+         
+         |...
+ 
+ Now, you need to install all the python dependencies:
+ 
+ >cd repo
+ >pip install -r requirements.txt
+
+This might take a little while. Once it is finished, you can finally view the analysis dashboard app:
+ 
+ >streamlit run analysisDashboard.py
+
+This will set up a local web server and open the app in a browser window. From there, enjoy!
+
+To run the twitter bot, and to set the frequency of time at which the code will query the price feeds and update your local historical data, go to the repo folder and open the PetaBotDriver.py module in a python IDE, like spyder.
+
+Run the module to load in the functions, and then run the main function in the module:
+>>> executePetaBotTasks(scheduler=s, timePeriod=60*30, pricePercentageTweetThreshold=0.1)
+
+For as long as this python function runs, it will continue to schedule price query events every timePeriod seconds, and then tweet the results if the DODO price is lower than the chainlink pricefeed price by the percentage specified in the pricePercentageTweetThreshold input.
+
+Note, the first time I started using the twitter bot, my twitter developer account got banned for breaking twitter rules. They never told me which rules I broke, but it might have had to do with trying to tweet too often. You should be able to adjust the timePeriod input to take care of this. :)
+
+Enjoy!
 
 ## Summary
 Follow our [Twitter Bot](https://twitter.com/DodoPetaBot)!
