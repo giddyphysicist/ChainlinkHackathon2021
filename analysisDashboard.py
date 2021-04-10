@@ -245,7 +245,8 @@ def buildAnalysisDashboardApp():
     st.text('Price Edge & Twitter Analysis Bot')
     st.markdown('Check us out on [Github](https://github.com/giddyphysicist/ChainlinkHackathon2021)!')
     st.markdown('Follow our Alert Bot on [Twitter](https://twitter.com/DodoPetaBot)!')
-    
+    st.markdown('Like the PETA-Bot Project? Consider Donating ETH!')
+    st.markdown('0x2263B05F52e30b84416EF4C6a060E966645Cc66e')
     st.markdown('---')
     
     aboutExpander = st.beta_expander("About Us")
