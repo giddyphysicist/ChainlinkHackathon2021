@@ -248,10 +248,10 @@ def buildAnalysisDashboardApp():
     with icol3:
         pass
 
-    st.title('PETA-BOT Analysis Dashboard')
+    st.markdown('## DODO/LINK PETA-BOT Analysis Dashboard')
     st.text('Price Edge & Twitter Analysis Bot')
     st.markdown('Check us out on [Github](https://github.com/giddyphysicist/ChainlinkHackathon2021)!')
-    st.markdown('Follow our Alert Bot on [Twitter](https://twitter.com/DodoPetaBot)!')
+    st.markdown('Follow our Alert Bot on [Twitter @DodoPetaBot](https://twitter.com/DodoPetaBot)!')
     st.markdown('Like the PETA-Bot Project? Consider Donating ETH!')
     st.markdown('0x2263B05F52e30b84416EF4C6a060E966645Cc66e')
     st.markdown('---')
@@ -259,10 +259,12 @@ def buildAnalysisDashboardApp():
     aboutExpander = st.beta_expander("About Us")
     with aboutExpander:
         st.markdown('The Price Edge & Twitter Analysis Bot (PETA-Bot) was developed during the 2021 Chainlink Hackathon.')
-        st.markdown('The PETA-Bot Project consists of two main components:')
+        st.markdown('The PETA-Bot Project consists of four main components:')
         st.markdown('1. Twitter Bot')
         st.markdown('2. Analysis Dashboard')
-        st.markdown('Both components use the smart contract price feeds supplied by DODO and Chainlink for mainnet price comparisons between the exhanges. When the DODO exchange has a better midprice than the price quoted in chainlink, the twitter bot announces the percentage advantage in a tweet. The data files are stored locally, but are backed up to a directory on the decentralized IPFS, using the IPNS feature to tag a (regularly updated) data directory with a constant IPNS name.')
+        st.markdown('3. Price Query Data API')
+        st.markdown('4. Data Storage Interface to IPFS')
+        st.markdown('The first two components (the twitter bot and the analysis dashboard) are the front end portions. The 3rd component, the price query data API, uses the smart contract price feeds supplied by DODO and Chainlink for mainnet price comparisons between the exhanges. When the DODO exchange has a better midprice than the price quoted in chainlink, the twitter bot announces the percentage advantage in a tweet. The data files are stored locally, but are backed up to a directory on the decentralized IPFS, using the IPNS feature to tag a (regularly updated) data directory with a constant IPNS name.')
         st.image('./img/PETA-Bot_chart.png')
         
     
@@ -315,7 +317,7 @@ def buildAnalysisDashboardApp():
     with footerCol1:
         st.markdown('Check us out on [Github](https://github.com/giddyphysicist/ChainlinkHackathon2021)!')
     with footerCol2:
-        st.markdown('Follow our Alert Bot on [Twitter](https://twitter.com/DodoPetaBot)!')
+        st.markdown('Follow our Alert Bot on [Twitter @DodoPetaBot](https://twitter.com/DodoPetaBot)! ')
         # st.text(f'25th perc.: {pe25:.3f} %')
         # st.text(f'75th perc.: {pe75:.3f} %')
    
