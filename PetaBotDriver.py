@@ -65,17 +65,22 @@ def executePetaBotTasks(scheduler=s, timePeriod=60*30, pricePercentageTweetThres
         DSI.pushDatabase(newDatabase,location=location,currencyPair=pricePair)
         #check if DODO has price advantage
         #if so, compose tweet.
-        
-        
+        #######################################################################
+        #### NOTE: I had to comment this section out, because Twitter froze this 
+        #### account for violating its policies. I had already live-tweeted 
+        #### quite a few instances of the DODO price edge, but until I head back
+        #### from twitter support, I am unable to auto-tweet. :(
+        #######################################################################
         # if priceData['dodoPriceEdgePercentage'] > pricePercentageTweetThreshold:
         #     try:
         #         TB.postPriceEdge(pricePair, 
-        #                          priceData['dodoPriceEdgePercentage'], 
-        #                          priceData['chainlinkPrice'], 
-        #                          priceData['dodoPrice'])
+        #                           priceData['dodoPriceEdgePercentage'], 
+        #                           priceData['chainlinkPrice'], 
+        #                           priceData['dodoPrice'])
+        #         time.sleep(60) #wait 60 seconds between tweets to try not to violate twitter policy
         #     except:
-        #         print('ERROR IN TRYING TO TWEET')
-        
+        #         print(f'ERROR IN TRYING TO TWEET FOR {pricePair}')
+        #######################################################################
 
     scheduler.enter(timePeriod,1,executePetaBotTasks,kwargs={"scheduler":scheduler,
                                                              "timePeriod":timePeriod,
