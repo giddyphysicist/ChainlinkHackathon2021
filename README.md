@@ -107,7 +107,7 @@ To run the twitter bot, and to set the frequency of time at which the code will 
 
 Run the module to load in the functions, and then run the main function in the module:
 
-(python)>>> executePetaBotTasks(scheduler=s, timePeriod=60*30, pricePercentageTweetThreshold=0.1)
+>(python)>>> executePetaBotTasks(scheduler=s, timePeriod=60*30, pricePercentageTweetThreshold=0.1)
 
 For as long as this python function runs, it will continue to schedule price query events every timePeriod seconds, and then tweet the results if the DODO price is lower than the chainlink pricefeed price by the percentage specified in the pricePercentageTweetThreshold input.
 
