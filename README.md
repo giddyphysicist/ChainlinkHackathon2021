@@ -66,15 +66,15 @@ The secretInfuraCredentials.json file should contain the following:
 
  "PROJECT_SECRET":"\<YOUR SECRET INFURA PROJECT ID HERE\>",
  
- "KOVAN_ENDPOINT":"https://kovan.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>",
+ "KOVAN_ENDPOINT":"https://kovan.infura.io/v3/<YOUR INFURA PROJECT ID HERE\>",
  
- "MAINNET_ENDPOINT":"https://mainnet.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>",
+ "MAINNET_ENDPOINT":"https://mainnet.infura.io/v3/<YOUR INFURA PROJECT ID HERE\>",
  
- "ROPSTEN_ENDPOINT":"https://ropsten.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>",
+ "ROPSTEN_ENDPOINT":"https://ropsten.infura.io/v3/<YOUR INFURA PROJECT ID HERE\>",
  
- "RINKEBY_ENDPOINT":"https://rinkeby.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>",
+ "RINKEBY_ENDPOINT":"https://rinkeby.infura.io/v3/<YOUR INFURA PROJECT ID HERE\>",
  
- "GOERLI_ENDPOINT":"https://goerli.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>"}
+ "GOERLI_ENDPOINT":"https://goerli.infura.io/v3/<YOUR INFURA PROJECT ID HERE\>"}
   
  So now, your directory structure should look like:
  
@@ -107,7 +107,7 @@ To run the twitter bot, and to set the frequency of time at which the code will 
 
 Run the module to load in the functions, and then run the main function in the module:
 
-(python)>>> executePetaBotTasks(scheduler=s, timePeriod=60*30, pricePercentageTweetThreshold=0.1)
+>(python)>>> executePetaBotTasks(scheduler=s, timePeriod=60*30, pricePercentageTweetThreshold=0.1)
 
 For as long as this python function runs, it will continue to schedule price query events every timePeriod seconds, and then tweet the results if the DODO price is lower than the chainlink pricefeed price by the percentage specified in the pricePercentageTweetThreshold input.
 
