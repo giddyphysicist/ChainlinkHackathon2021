@@ -66,15 +66,15 @@ The secretInfuraCredentials.json file should contain the following:
 
  "PROJECT_SECRET":"\<YOUR SECRET INFURA PROJECT ID HERE\>",
  
- "KOVAN_ENDPOINT":"https://kovan.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>",
+ "KOVAN_ENDPOINT":"https://kovan.infura.io/v3/<YOUR INFURA PROJECT ID HERE\>",
  
- "MAINNET_ENDPOINT":"https://mainnet.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>",
+ "MAINNET_ENDPOINT":"https://mainnet.infura.io/v3/<YOUR INFURA PROJECT ID HERE\>",
  
- "ROPSTEN_ENDPOINT":"https://ropsten.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>",
+ "ROPSTEN_ENDPOINT":"https://ropsten.infura.io/v3/<YOUR INFURA PROJECT ID HERE\>",
  
- "RINKEBY_ENDPOINT":"https://rinkeby.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>",
+ "RINKEBY_ENDPOINT":"https://rinkeby.infura.io/v3/<YOUR INFURA PROJECT ID HERE\>",
  
- "GOERLI_ENDPOINT":"https://goerli.infura.io/v3/\<YOUR INFURA PROJECT ID HERE\>"}
+ "GOERLI_ENDPOINT":"https://goerli.infura.io/v3/<YOUR INFURA PROJECT ID HERE\>"}
   
  So now, your directory structure should look like:
  
