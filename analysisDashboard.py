@@ -265,6 +265,7 @@ def buildAnalysisDashboardApp():
         st.markdown('3. Price Query Data API')
         st.markdown('4. Data Storage Interface to IPFS')
         st.markdown('The first two components (the twitter bot and the analysis dashboard) are the front end portions. The 3rd component, the price query data API, uses the smart contract price feeds supplied by DODO and Chainlink for mainnet price comparisons between the exhanges. When the DODO exchange has a better midprice than the price quoted in chainlink, the twitter bot announces the percentage advantage in a tweet. The data files are stored locally, but are backed up to a directory on the decentralized IPFS, using the IPNS feature to tag a (regularly updated) data directory with a constant IPNS name.')
+        st.markdown(f'You can view a version of the price history data on the IPFS, located on the named [IPNS url]({DSI.getIPNSurl()})')
         st.image('./img/PETA-Bot_chart.png')
         
     

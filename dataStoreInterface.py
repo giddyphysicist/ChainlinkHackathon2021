@@ -23,9 +23,34 @@ import pandas as pd
 import time
 import queryPriceData as QPD
 
-# def getCurrencyPairs():
-#     return QPD.getCurrencyPairs()
+def getIPNSurl():
+    """
+    return the URL to the fixed IPNS (named IPFS hash) where the directory is 
+    stored containing the price history csv data for the analytics app.
 
+    Returns
+    -------
+    ipnsDir : str
+        string url to fixed IPNS location of slowly backed up price history data.
+
+    """
+    ipnsDir = r'https://gateway.ipfs.io/ipns/k51qzi5uqu5djuxohf4c5kj838m14tgygn1hrey2cmda0y2efzwu03w63em3qt/'
+    return ipnsDir
+    
+
+def getStreamlitHostingUrl():
+    """
+    returns the hosting URL to the streamlit analytics app for price edge viewing.
+
+
+    Returns
+    -------
+    streamlitHostingUrl : str
+        hosting URL for streamlit analytics app.
+
+    """
+    streamlitHostingUrl = r'https://share.streamlit.io/giddyphysicist/chainlinkhackathon2021/main/analysisDashboard.py'
+    return streamlitHostingUrl
 
 def queryDataPoint():
     result = QPD.queryAllPricesDodoAndChainlink(chain='mainnet')
@@ -78,7 +103,7 @@ def loadDatabase(currencyPair, location='file'):
         file = f'./data/{currencyPair}.csv'
         if not os.path.isfile(file):
             #pull from ipfs
-            ipnsDir = r'https://gateway.ipfs.io/ipns/k51qzi5uqu5djuxohf4c5kj838m14tgygn1hrey2cmda0y2efzwu03w63em3qt/'
+            ipnsDir = getIPNSurl()
             ipnsFile = ipnsDir + f'{currencyPair}.csv'
             df = pd.read_csv(ipnsFile)
             df.to_csv(file,index=False)
@@ -87,7 +112,7 @@ def loadDatabase(currencyPair, location='file'):
     elif location.lower() =='ipfs':
         # raise NotImplementedError()
         try:
-            ipnsDir = r'https://gateway.ipfs.io/ipns/k51qzi5uqu5djuxohf4c5kj838m14tgygn1hrey2cmda0y2efzwu03w63em3qt/'
+            ipnsDir = getIPNSurl()
             ipnsFile = ipnsDir + f'{currencyPair}.csv'
         except:
             print(f'WARNING -- COULD NOT EXTRACT {currencyPair} file from IFPS. Reverting to local file.')
@@ -158,9 +183,7 @@ def pushDatabase(database,location='file',currencyPair=None):
     else:
         raise Exception('UNRECOGNIZED INPUT. LOCATION INPUT MUST SET TO "FILE" or "IPFS"')
     
-    
-# def pushAllDataToIpfs(dataDir='data'):
-#     commands = ['ipfs','add','-r',dataDir]
-#     pipe = subprocess.Popen(commands,stdout=subprocess.PIPE)
-#     msg = pipe.
+
+
+
     

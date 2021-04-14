@@ -29,9 +29,13 @@ I used web3.py to interact with the chainlink price feed smart contracts on the 
 
 The main driving module is the PetaBotDriver.py. This module schedules price queries at a specified time interval (defaults to every 30 minutes). Once the price is queried for 8 different currency pairs on both the chainlink mainnet price feed, as well as on the DODO price feed, the data is appended to the historical price data database. 
 
-## How to run 
+## *NEW!* How to run online
 
-Make sure you have a recent version of python installed on your machine.
+Our streamlit-based app is now hosted through streamlit and github, and is available [here](https://share.streamlit.io/giddyphysicist/chainlinkhackathon2021/main/analysisDashboard.py) if you'd like to play with it!
+
+## How to run locally for building your own price data history
+
+Make sure you have a recent version of python (3.8 or higher) installed on your machine.
 
 Create a new directory on your local computer and cd into it. 
 >mkdir petabot-project
