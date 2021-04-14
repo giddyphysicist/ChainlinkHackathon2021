@@ -6,7 +6,6 @@ argon2-cffi==20.1.0
 asn1crypto==1.4.0
 astor==0.8.1
 astroid==2.5
-astropy==4.2.1
 async-generator==1.10
 atomicwrites==1.4.0
 attrs==20.3.0
@@ -164,7 +163,6 @@ psutil==5.8.0
 ptyprocess==0.7.0
 py==1.10.0
 pyarrow==3.0.0
-pycodestyle==2.6.0
 pycosat==0.6.3
 pycparser==2.20
 pycryptodome==3.10.1
