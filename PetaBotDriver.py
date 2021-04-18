@@ -59,6 +59,7 @@ def executePetaBotTasks(scheduler=s, timePeriod=60*30, pricePercentageTweetThres
     """
     location='file'
     dataRowDict = DSI.queryDataPoint()
+    print(f'Running PETA-Bot tasks at time stamp {time.ctime(time.time())}')
     for pricePair,priceData in dataRowDict.items():
         database = DSI.loadDatabase(pricePair, location=location)
         newDatabase = DSI.appendDataRowToDatabase(priceData, database)
