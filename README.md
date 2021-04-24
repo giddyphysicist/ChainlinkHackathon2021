@@ -120,7 +120,7 @@ Note, the first time I started using the twitter bot, my twitter developer accou
 Enjoy!
 
 ### Note on hosted app
-I have requested from streamlit's website that I be able to host the analysis dashboard app, but I am currently still on their waiting list for this. Once the app is hosted, anyone could interact with the tool and could use the data from IPFS. This, or hosting it myself on google cloud, will likely be a next step for the project.
+I have requested from streamlit's website that I be able to host the analysis dashboard app, and it can be found [here](https://share.streamlit.io/giddyphysicist/chainlinkhackathon2021/main/analysisDashboard.py). Later, I could host it myself on google cloud or AWS, will likely be a next step for the project.
 
 ## Summary
 Follow our [Twitter Bot](https://twitter.com/DodoPetaBot)!
